@@ -25,6 +25,13 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: "Order", id }],
     }),
+    createPaymentIntent: builder.mutation({
+      query: (data) => ({
+        url: "/payment/create-payment-intent",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -33,4 +40,5 @@ export const {
   useGetOrderByIdQuery,
   useGetMyOrdersQuery,
   usePayOrderMutation,
+  useCreatePaymentIntentMutation,
 } = ordersApiSlice;
