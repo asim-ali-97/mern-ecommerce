@@ -11,10 +11,12 @@ import {
   useGetOrderByIdQuery,
   usePayOrderMutation,
   useCreatePaymentIntentMutation,
+  useDeliverOrderMutation,
 } from "../services/ordersApiSlice";
 import Spinner from "../components/ui/Spinner";
 import Message from "../components/ui/Message";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 
@@ -76,9 +78,27 @@ const OrderPage = () => {
   const [clientSecret, setClientSecret] = useState("");
   const { data: order, isLoading, isError, refetch } = useGetOrderByIdQuery(id);
   const [createPaymentIntent] = useCreatePaymentIntentMutation();
+  const { userInfo } = useSelector((state) => state.auth);
+  const [deliverOrder] = useDeliverOrderMutation(); // import this too
+
+  const deliverHandler = async () => {
+    if (!window.confirm("Mark this order as Delivered?")) return;
+    try {
+      await deliverOrder(order._id).unwrap();
+      toast.success("Order marked as delivered");
+      refetch();
+    } catch (err) {
+      toast.error(err?.data?.message || "Could not update order");
+    }
+  };
 
   useEffect(() => {
-    if (order && !order.isPaid && !clientSecret) {
+    if (
+      order &&
+      !order.isPaid &&
+      order.paymentMethod === "Stripe" &&
+      !clientSecret
+    ) {
       const getSecret = async () => {
         try {
           const res = await createPaymentIntent({
@@ -176,24 +196,59 @@ const OrderPage = () => {
             </div>
           </div>
 
-          {/* Stripe payment form */}
-          {!order.isPaid && (
-            <div className="card">
-              <h2 className="text-lg font-bold mb-4">Pay Now</h2>
-              {clientSecret ? (
-                <Elements
-                  stripe={stripePromise}
-                  options={{ clientSecret, appearance: { theme: "stripe" } }}
-                >
-                  <CheckoutForm order={order} onSuccess={refetch} />
-                </Elements>
-              ) : (
-                <Spinner />
+          {/* Admin actions */}
+          {userInfo?.isAdmin && (
+            <div className="card space-y-3">
+              <h2 className="text-lg font-bold">Admin Actions</h2>
+              <div className="text-sm space-y-1">
+                <p>
+                  <span className="text-gray-500">Payment:</span>{" "}
+                  {order.isPaid
+                    ? `Paid on ${new Date(order.paidAt).toLocaleDateString()}`
+                    : "Not paid"}
+                </p>
+                <p>
+                  <span className="text-gray-500">Delivery:</span>{" "}
+                  {order.isDelivered
+                    ? `Delivered on ${new Date(order.deliveredAt).toLocaleDateString()}`
+                    : "Not delivered"}
+                </p>
+              </div>
+              {!order.isDelivered && (
+                <button className="btn-primary w-full" onClick={deliverHandler}>
+                  Mark as Delivered
+                </button>
+              )}
+              {order.isDelivered && (
+                <Message type="success">✓ Order fulfilled</Message>
               )}
             </div>
           )}
 
-          {order.isPaid && <Message type="success">✓ Payment complete</Message>}
+          {/* Customer payment — only shown to non-admin */}
+          {!userInfo?.isAdmin && !order.isPaid && (
+            <div className="card">
+              <h2 className="text-lg font-bold mb-4">Pay Now</h2>
+              {order.paymentMethod === "Stripe" &&
+                (clientSecret ? (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{ clientSecret, appearance: { theme: "stripe" } }}
+                  >
+                    <CheckoutForm order={order} onSuccess={refetch} />
+                  </Elements>
+                ) : (
+                  <Spinner />
+                ))}
+              {order.paymentMethod === "PayPal" && (
+                <Message type="info">PayPal integration coming soon.</Message>
+              )}
+            </div>
+          )}
+
+          {!userInfo?.isAdmin && order.isPaid && (
+            <Message type="success">✓ Payment complete</Message>
+          )}
         </div>
       </div>
     </div>

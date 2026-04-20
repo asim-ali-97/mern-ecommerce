@@ -7,9 +7,9 @@ dotenv.config();
 mongoose.connect(process.env.MONGO_URI);
 
 const sampleUser = {
-  name: "Admin User",
-  email: "admin@example.com",
-  password: "password123",
+  name: "Admin",
+  email: "admin@yopmail.com",
+  password: "Secret@123",
   isAdmin: true,
 };
 
@@ -54,9 +54,9 @@ const seedDB = async () => {
   await Product.deleteMany();
 
   const user = await User.create(sampleUser);
-  const products = sampleProducts.map((p) => ({ ...p, user: user._id }));
-  await Product.insertMany(products);
-
+  // const products = sampleProducts.map((p) => ({ ...p, user: user._id }));
+  // await Product.insertMany(products);
+  // console.log("Database has been cleared..");
   console.log("Database seeded!");
   process.exit();
 };

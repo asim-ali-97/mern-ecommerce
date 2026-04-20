@@ -4,10 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLoginMutation } from "../services/authApiSlice";
 import { setCredentials } from "../features/auth/authSlice";
 import { toast } from "react-toastify";
+import SvgHidePassIcon from "../components/icon/SvgHidePassIcon";
+import SvgShowPassIcon from "../components/icon/SvgShowPassIcon";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { search } = useLocation();
@@ -18,6 +21,10 @@ const LoginPage = () => {
   useEffect(() => {
     if (userInfo) navigate(redirect);
   }, [userInfo, redirect, navigate]);
+
+  const toggleShowPass = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,17 +54,28 @@ const LoginPage = () => {
               required
             />
           </div>
-          <div>
+          <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
             <input
-              className="input-field"
-              type="password"
+              className="input-field pr-8"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            {showPassword ? (
+              <SvgHidePassIcon
+                toggleShowPass={toggleShowPass}
+                class_name="absolute top-10 right-3 z-10"
+              />
+            ) : (
+              <SvgShowPassIcon
+                toggleShowPass={toggleShowPass}
+                class_name="absolute top-10 right-3 z-10"
+              />
+            )}
           </div>
           <button
             className="btn-primary w-full"

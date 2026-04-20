@@ -32,6 +32,20 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
+    getAllOrders: builder.query({
+      query: () => "/orders",
+      providesTags: ["Order"],
+    }),
+    deliverOrder: builder.mutation({
+      query: (id) => ({
+        url: `/orders/${id}/deliver`,
+        method: "PUT",
+      }),
+      invalidatesTags: ["Order"],
+    }),
+    getAdminStats: builder.query({
+      query: () => "/admin/stats",
+    }),
   }),
 });
 
@@ -41,4 +55,7 @@ export const {
   useGetMyOrdersQuery,
   usePayOrderMutation,
   useCreatePaymentIntentMutation,
+  useGetAllOrdersQuery,
+  useDeliverOrderMutation,
+  useGetAdminStatsQuery,
 } = ordersApiSlice;

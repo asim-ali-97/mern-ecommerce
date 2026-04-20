@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Order from "../models/orderModel.js";
+import Product from "../models/productModel.js";
 
 // @desc    Create order
 // @route   POST /api/orders
@@ -63,6 +64,16 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Order not found");
   }
+
+  // ← reduce stock for each item
+  for (const item of order.orderItems) {
+    const product = await Product.findById(item.product);
+    if (product) {
+      product.countInStock = Math.max(0, product.countInStock - item.qty);
+      await product.save();
+    }
+  }
+
   order.isPaid = true;
   order.paidAt = Date.now();
   order.paymentResult = {
@@ -71,6 +82,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     update_time: req.body.update_time,
     email_address: req.body.email_address,
   };
+
   const updated = await order.save();
   res.json(updated);
 });
