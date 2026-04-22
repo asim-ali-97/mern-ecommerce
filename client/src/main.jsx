@@ -28,21 +28,26 @@ import AdminDashboardPage from "./pages/admin/AdminDashboardPage";
 import AdminProductsPage from "./pages/admin/AdminProductsPage";
 import AdminOrdersPage from "./pages/admin/AdminOrdersPage";
 import AdminEditProductPage from "./pages/admin/AdminEditProductPage";
+import CustomerRoute from "./components/ui/CustomerRoute";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<HomePage />} />
       <Route path="products/:id" element={<ProductPage />} />
-      <Route path="cart" element={<CartPage />} />
+      <Route element={<CustomerRoute />}>
+        <Route path="cart" element={<CartPage />} />
+      </Route>
       <Route path="login" element={<LoginPage />} />
       <Route path="register" element={<RegisterPage />} />
 
       {/* Protected routes */}
       <Route element={<PrivateRoute />}>
-        <Route path="shipping" element={<ShippingPage />} />
-        <Route path="payment" element={<PaymentPage />} />
-        <Route path="placeorder" element={<PlaceOrderPage />} />
+        <Route element={<CustomerRoute />}>
+          <Route path="shipping" element={<ShippingPage />} />
+          <Route path="payment" element={<PaymentPage />} />
+          <Route path="placeorder" element={<PlaceOrderPage />} />
+        </Route>
         <Route path="orders/:id" element={<OrderPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>

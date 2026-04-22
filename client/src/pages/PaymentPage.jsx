@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { savePaymentMethod } from "../features/cart/cartSlice";
 import { CheckoutSteps } from "./ShippingPage";
 
 const PaymentPage = () => {
-  const { shippingAddress } = useSelector((state) => state.cart);
+  const cart = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [method, setMethod] = useState("Stripe");
 
-  // Redirect back if no shipping address
-  if (!shippingAddress?.address) {
-    navigate("/shipping");
-    return null;
-  }
+  useEffect(() => {
+    if (cart.cartItems.length == 0) {
+      navigate("/cart", { state: { emptyCart: true } });
+    }
+    // Redirect back if no shipping address
+    if (!cart.shippingAddress?.address) {
+      navigate("/shipping");
+    }
+  }, [cart, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

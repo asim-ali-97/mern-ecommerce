@@ -17,6 +17,7 @@ const ProductPage = () => {
   const dispatch = useDispatch();
   const { userInfo } = useSelector((state) => state.auth);
   const [qty, setQty] = useState(1);
+  const [imgIndex, setImgIndex] = useState(0);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
 
@@ -62,7 +63,7 @@ const ProductPage = () => {
         {/* Image */}
         <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden">
           <img
-            src={product.images[0]}
+            src={product.images[imgIndex]}
             alt={product.name}
             className="w-full h-full object-cover"
           />
@@ -75,6 +76,18 @@ const ProductPage = () => {
           <p className="text-3xl font-bold text-blue-600">
             ${product.price.toFixed(2)}
           </p>
+          {product.images.length > 0 && (
+            <div className="flex gap-2">
+              {product.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  className={`w-12 h-12 object-cover rounded-lg cursor-pointer ${imgIndex == index ? "border-4 border-white" : ""}`}
+                  onClick={() => setImgIndex(index)}
+                ></img>
+              ))}
+            </div>
+          )}
           <p className="text-gray-600">{product.description}</p>
 
           <div className="card mt-2">
@@ -91,7 +104,7 @@ const ProductPage = () => {
               </span>
             </div>
 
-            {product.countInStock > 0 && (
+            {!userInfo?.isAdmin && product.countInStock > 0 && (
               <div className="flex justify-between items-center mb-4 text-sm">
                 <span className="text-gray-600">Qty</span>
                 <select
@@ -110,13 +123,15 @@ const ProductPage = () => {
               </div>
             )}
 
-            <button
-              className="btn-primary w-full"
-              disabled={product.countInStock === 0}
-              onClick={addToCartHandler}
-            >
-              Add to Cart
-            </button>
+            {!userInfo?.isAdmin && (
+              <button
+                className="btn-primary w-full"
+                disabled={product.countInStock === 0}
+                onClick={addToCartHandler}
+              >
+                Add to Cart
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -140,7 +155,7 @@ const ProductPage = () => {
           )}
         </div>
 
-        {userInfo && (
+        {!userInfo?.isAdmin && userInfo && (
           <div>
             <h2 className="text-xl font-bold mb-4">Write a Review</h2>
             <form onSubmit={submitReview} className="card space-y-4">

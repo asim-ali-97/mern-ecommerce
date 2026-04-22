@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
+import Order from "../models/orderModel.js";
 
 dotenv.config();
 mongoose.connect(process.env.MONGO_URI);
@@ -9,7 +10,7 @@ mongoose.connect(process.env.MONGO_URI);
 const sampleUser = {
   name: "Admin",
   email: "admin@yopmail.com",
-  password: "Secret@123",
+  password: "secret@123",
   isAdmin: true,
 };
 
@@ -50,13 +51,14 @@ const sampleProducts = [
 ];
 
 const seedDB = async () => {
-  await User.deleteMany();
-  await Product.deleteMany();
+  // await User.deleteMany();
+  // await Product.deleteMany();
+  // await Order.deleteMany();
+  // console.log("Database has been cleared..");
 
-  const user = await User.create(sampleUser);
+  // const user = await User.create(sampleUser);
   // const products = sampleProducts.map((p) => ({ ...p, user: user._id }));
   // await Product.insertMany(products);
-  // console.log("Database has been cleared..");
   console.log("Database seeded!");
   process.exit();
 };

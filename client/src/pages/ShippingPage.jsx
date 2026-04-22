@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveShippingAddress } from "../features/cart/cartSlice";
 
 const ShippingPage = () => {
-  const { shippingAddress } = useSelector((state) => state.cart);
+  const { shippingAddress, cartItems } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -14,6 +14,11 @@ const ShippingPage = () => {
     shippingAddress?.postalCode || "",
   );
   const [country, setCountry] = useState(shippingAddress?.country || "");
+
+  useEffect(() => {
+    if (cartItems.length == 0)
+      navigate("/cart", { state: { emptyCart: true } });
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();

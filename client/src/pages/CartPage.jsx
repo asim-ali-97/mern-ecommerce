@@ -2,8 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart, removeFromCart } from "../features/cart/cartSlice";
 import Message from "../components/ui/Message";
+import { useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CartPage = () => {
+  const location = useLocation();
+  const emptyCart = location.state?.emptyCart;
+  if (emptyCart) {
+    toast.error("Add product to cart first.");
+  }
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { cartItems, itemsPrice, shippingPrice, taxPrice, totalPrice } =

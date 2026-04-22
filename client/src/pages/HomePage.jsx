@@ -45,7 +45,7 @@ const HomePage = () => {
           <h2 className="text-2xl font-bold mb-6">
             {search ? `Results for "${search}"` : "Latest Products"}
           </h2>
-          {data.products.length === 0 ? (
+          {data.products?.length === 0 ? (
             <Message>No products found.</Message>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

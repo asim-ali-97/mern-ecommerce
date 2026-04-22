@@ -31,7 +31,7 @@ const LoginPage = () => {
     try {
       const data = await login({ email, password }).unwrap();
       dispatch(setCredentials(data));
-      navigate(redirect);
+      navigate("/admin/dashboard");
     } catch (err) {
       toast.error(err?.data?.message || "Login failed");
     }
