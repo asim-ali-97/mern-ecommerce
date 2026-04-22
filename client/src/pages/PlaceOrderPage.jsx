@@ -15,11 +15,9 @@ const PlaceOrderPage = () => {
   const [createOrder, { isLoading, error }] = useCreateOrderMutation();
 
   useEffect(() => {
-    if (cart.cartItems.length == 0)
-      navigate("/cart", { state: { emptyCart: true } });
-    else if (!cart.shippingAddress?.address) navigate("/shipping");
+    if (!cart.shippingAddress?.address) navigate("/shipping");
     else if (!cart.paymentMethod) navigate("/payment");
-  }, [cart, navigate]);
+  }, [navigate]);
 
   const placeOrderHandler = async () => {
     try {
