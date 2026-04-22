@@ -12,9 +12,6 @@ const PaymentPage = () => {
   const [method, setMethod] = useState("Stripe");
 
   useEffect(() => {
-    if (cart.cartItems.length == 0) {
-      navigate("/cart", { state: { emptyCart: true } });
-    }
     // Redirect back if no shipping address
     if (!cart.shippingAddress?.address) {
       navigate("/shipping");
